@@ -11,6 +11,10 @@ public class Logout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public void service(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		Cookie[] cookies = req.getCookies();
+		HttpSession session = req.getSession(false);
+		if(session != null) {
+			session.invalidate();
+		}
 		if(cookies != null) {
 			for(Cookie ck : cookies) {
 				if(ck.getName().equals("email") || ck.getName().equals("role")) {

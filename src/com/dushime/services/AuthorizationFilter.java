@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.dushime.utility.PathExtract;
 
@@ -42,15 +43,41 @@ public class AuthorizationFilter implements Filter {
 				}
 			}
 		}
-		String redirect = PathExtract.getRedirect(pathname, role);
-		if(redirect == null) {
-			chain.doFilter(req, res);
+		
+		System.out.println("Session checking");
+		if(role != null && !role.equals("") && !pathname.equals("login.html") && !pathname.equals("login") ) {
+			System.out.println("role found");
+			HttpSession session = req.getSession(false);
+			if(session == null) {
+				Cookie ck = new Cookie("msgErr", "Session-time-out");
+				ck.setMaxAge(2);
+				res.addCookie(ck);
+				res.sendRedirect("login.html");
+			}else {
+				String redirect = PathExtract.getRedirect(pathname, role);
+				if(redirect == null) {
+					chain.doFilter(req, res);
+				}else {
+					Cookie ck = new Cookie("msgErr", "Not-authorised-to-view-this-page.-First-login-please!!");
+					ck.setMaxAge(3);
+					res.addCookie(ck);
+					res.sendRedirect(redirect);
+				}
+			}
 		}else {
-			Cookie ck = new Cookie("msgErr", "Not-authorised-to-view-this-page.-First-login-please!!");
-			ck.setMaxAge(5);
-			res.addCookie(ck);
-			res.sendRedirect(redirect);
+			String redirect = PathExtract.getRedirect(pathname, role);
+			if(redirect == null) {
+				chain.doFilter(req, res);
+			}else {
+				Cookie ck = new Cookie("msgErr", "Not-authorised-to-view-this-page.-First-login-please!!");
+				ck.setMaxAge(3);
+				res.addCookie(ck);
+				res.sendRedirect(redirect);
+			}
 		}
+		
+		
+		
 	}
 
 	@Override

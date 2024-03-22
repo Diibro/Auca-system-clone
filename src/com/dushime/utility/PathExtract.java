@@ -24,6 +24,7 @@ public class PathExtract {
 		 switch(pathname) {
 		 	case "apply.html":
 		 	case "onlineRegistration.html":
+		 	case "academics.html":
 		 		if(role != null && role.equals("student")) {
 		 			return null;
 		 		}else {

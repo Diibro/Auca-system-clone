@@ -40,7 +40,25 @@
           </div>
      </header>
      <main class="page-content">
-          <h2>About AUCA</h2>
+          <div class="form-container">
+               <h3>Login</h3>
+               <p class="small gray-text">Login using your student Id Provided in the email to access the student portal</p>
+               <form action="login" method="post">
+                    <div class="group">
+                         <label for="stuId">Student Id:</label>
+                         <input type="text" name="stuId" required id="stuId">
+                    </div>
+                    <div class="group">
+                         <label for="password" >Password:</label>
+                         <input type="password" name="password" required id="password">
+                    </div>
+                    <div class="group">
+                         <input type="submit" value="Login">
+                    </div>
+               </form>
+               <div class="divider">
+               </div>
+          </div>
      </main>
      <footer class="main-footer">
           <div class="top-row">

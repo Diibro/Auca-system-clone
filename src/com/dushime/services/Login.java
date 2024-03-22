@@ -22,20 +22,27 @@ public class Login extends HttpServlet {
 			User u = new UserDao().search(user);
 			if(u != null && u.getPassword().equals(user.getPassword())) {
 				Cookie emailCookie = new Cookie("email", u.getEmail());
-				emailCookie.setMaxAge(60*3);
+				emailCookie.setMaxAge(60*60);
 				res.addCookie(emailCookie);
 				
 				Cookie roleCookie = new Cookie("role", u.getRole());
-				roleCookie.setMaxAge(60 * 3);
+				roleCookie.setMaxAge(60 * 60);
 				res.addCookie(roleCookie);
 				
 				Cookie msgCookie = new Cookie("msg", "Successfully-logged-in!!");
-				msgCookie.setMaxAge(5);
+				msgCookie.setMaxAge(2);
 				res.addCookie(msgCookie);
+				
+				HttpSession session = req.getSession(true);
+				session.setAttribute("email", u.getEmail());
+				session.setAttribute("role", u.getRole());
+				session.setAttribute("password", u.getPassword());
+				session.setMaxInactiveInterval(60);
+				System.out.println("Session set now");
 				res.sendRedirect("index.html");
 			}else {
 				Cookie msgCookie = new Cookie("msgErr", "Fail.-invalid-login-credentials");
-				msgCookie.setMaxAge(5);
+				msgCookie.setMaxAge(2);
 				res.addCookie(msgCookie);
 				res.sendRedirect("login.html");
 			}

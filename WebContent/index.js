@@ -1,3 +1,5 @@
+const parent = document.querySelector("body");
+const popBox = document.createElement("div");
 
 function parseCookies() {
      var cookies = {};
@@ -25,8 +27,6 @@ function displayLoginBtns(){
 }
 
 function getServerMessage(){
-     const parent = document.querySelector("body");
-     const popBox = document.createElement("div");
      parent.appendChild(popBox);
      const cookie = parseCookies();
      popBox.classList.add("pop-box")
@@ -48,6 +48,28 @@ function getServerMessage(){
      }
 }
 
+function displayErrorMessage() {
+     var msg = window.localStorage.getItem("msgErr");
+     if(parseCookies().msg != undefined || parseCookies().msgErr != undefined){
+          if(msg != undefined && msg != "" && msg != null){
+               window.localStorage.removeItem("msgErr");
+          }
+          return;
+     }else{
+          if(msg != undefined && msg != "" && msg != null){
+               console.log(msg);
+               parent.appendChild(popBox);
+               popBox.classList.add("fail-pop");
+               popBox.innerHTML = msg;
+               setTimeout(function() {
+                    parent.removeChild(popBox);
+               }, 3000);
+               window.localStorage.removeItem("msgErr");
+          }
+     }
+     
+}
+
 function getPathName(){
      var pathname = window.location.pathname;
      var pathArr = pathname.split('/');
@@ -56,8 +78,38 @@ function getPathName(){
 
 function authorizationFilter(){
      var path = getPathName();
+     console.log(path);
+     var cookies = parseCookies();
+     const { role } = cookies;
+     var msg = "";
      if(path === ""){
+          window.location.replace("index.html");
+     }
+
+     if(role === "admin"){
+          return;
+     }
+     switch(path){
+          case "apply.html":
+          case "onlineRegistration.html":
+          case "academics.html":
+               if(role != "student"){
+                    msg = "Must be Student to access this page";
+               }
+               break;
+          case "media.html":
+          case "research.html":
+               if(role != "teacher"){
+                    msg = "Must be teacher to access this page";
+               }
+               break;
+          default:
+               return;
+     }
+
+     if(msg != ""){
           window.location.replace("login.html");
+          window.localStorage.setItem("msgErr", msg);
      }
 }
 
@@ -65,4 +117,10 @@ function authorizationFilter(){
      displayLoginBtns();
      getServerMessage();
      authorizationFilter();
+     displayErrorMessage();
 } )();
+
+window.onpopstate = () => {
+     displayErrorMessage();
+     authorizationFilter();
+}
